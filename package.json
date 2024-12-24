@@ -1,0 +1,26 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev --host",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "nuxt": "^3.14.1592",
+    "vue": "latest",
+    "vue-router": "latest"
+  },
+  "devDependencies": {
+    "@types/three": "^0.171.0",
+    "@vueuse/core": "^12.2.0",
+    "@vueuse/nuxt": "^12.2.0",
+    "gsap": "^3.12.5",
+    "postprocessing": "^6.36.4",
+    "sass": "^1.83.0",
+    "three": "^0.171.0"
+  }
+}

@@ -256,7 +256,14 @@ onNuxtReady(() => {
     renderer.setSize(width.value, height.value)
     composer.setSize(width.value, height.value)
   }
-  window.addEventListener('resize', onWindowResize, false)
+
+  onMounted(() => {
+    window.addEventListener('resize', onWindowResize, false)
+  })
+
+  onBeforeUnmount(() => {
+    window.removeEventListener('resize', onWindowResize, false)
+  })
 })
 
 // 9. Window Resize Event Listener

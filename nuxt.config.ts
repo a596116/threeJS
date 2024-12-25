@@ -13,7 +13,7 @@ export default defineNuxtConfig({
       extensions: ['.vue'],
     },
   ],
-  modules: ['@vueuse/nuxt'],
+  modules: ['@vueuse/nuxt', '@nuxt/image'],
 
   // css
   css: ['~/styles/app.scss'],

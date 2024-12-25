@@ -14,6 +14,10 @@ const routerMap = [
     name: 'Project 1',
     path: '/project1',
   },
+  {
+    name: 'Project 2',
+    path: '/project2',
+  },
 ]
 </script>
 

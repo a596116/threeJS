@@ -2,6 +2,9 @@
   <main>
     <div ref="corridorRef" class="corridor"></div>
     <div ref="loadingRef" class="loading">Loading Scene</div>
+    <div class="overlay">
+      <div class="counter"><p>0</p></div>
+    </div>
     <div class="hero">
       <nav>
         <div class="logo">
@@ -28,14 +31,13 @@
 </template>
 
 <script setup lang="ts">
+import { gsap } from 'gsap'
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js'
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js'
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js'
 import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js'
-import { CopyShader } from 'three/addons/shaders/CopyShader.js'
-import { LuminosityHighPassShader } from 'three/addons/shaders/LuminosityHighPassShader.js'
 
 useSeoMeta({
   title: 'Project 1',
@@ -54,7 +56,7 @@ onNuxtReady(() => {
 
   const camera = new THREE.PerspectiveCamera(
     75,
-    width.value / height.value,
+    window.innerWidth / window.innerHeight,
     0.1,
     1000
   )
@@ -65,7 +67,7 @@ onNuxtReady(() => {
     stencil: false,
     depth: false,
   })
-  renderer.setSize(width.value, height.value)
+  renderer.setSize(window.innerWidth, window.innerHeight)
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
   // renderer.outputColorSpace = THREE.SRGBColorSpace
   // @ts-ignore
@@ -77,12 +79,12 @@ onNuxtReady(() => {
   const ambientLight = new THREE.AmbientLight(0xffffff, 0.5)
   scene.add(ambientLight)
 
-  const keyLight = new THREE.DirectionalLight(0xffffff, 0.5)
+  const keyLight = new THREE.DirectionalLight(0xfffffff, 0.5)
   keyLight.position.set(5, 8, 5)
   keyLight.castShadow = true
   scene.add(keyLight)
 
-  const fillLight = new THREE.DirectionalLight(0xffffff, 0.5)
+  const fillLight = new THREE.DirectionalLight(0x000000, 0.5)
   fillLight.position.set(-5, 3, -5)
   scene.add(fillLight)
 
@@ -97,22 +99,28 @@ onNuxtReady(() => {
   // 3. Camera and Movement Setup
   const initialAngle = Math.PI / 4
   const radius = Math.sqrt(50)
-  const currentAngle = ref(initialAngle)
+  const currentAngle = ref(initialAngle + Math.PI)
   const targetAngle = ref(initialAngle)
   const currentY = ref(0)
   const targetY = ref(0)
 
-  camera.position.set(5, 0, 5)
+  // Set initial camera position with different rotation
+  camera.position.x = Math.cos(currentAngle.value) * radius
+  camera.position.z = Math.sin(currentAngle.value) * radius
+  camera.position.y = currentY.value
   camera.lookAt(0, 0, 0)
 
   // 4. Parallax Control Setup
   const mouseX = ref(0)
   const mouseY = ref(0)
-  const windowHalfX = computed(() => width.value / 2)
-  const windowHalfY = computed(() => height.value / 2)
+  const windowHalfX = computed(() => window.innerWidth / 2)
+  const windowHalfY = computed(() => window.innerHeight / 2)
 
   const { x, y } = useMouse()
+  // Disable mouse control during initial animation
+  let animationComplete = false
   watchEffect(() => {
+    // if (!animationComplete) return
     mouseX.value = (x.value - windowHalfX.value) / windowHalfX.value
     mouseY.value = (y.value - windowHalfY.value) / windowHalfY.value
     targetAngle.value = initialAngle + -mouseX.value * 0.35
@@ -129,7 +137,9 @@ onNuxtReady(() => {
 
   const loader = new GLTFLoader()
   loader.load('/models/project1/scene.gltf', (gltf) => {
-    gltf.scene.traverse((child) => {
+    const model = gltf.scene
+
+    model.traverse((child) => {
       if (child instanceof THREE.Mesh) {
         child.castShadow = true
         child.receiveShadow = true
@@ -164,17 +174,198 @@ onNuxtReady(() => {
       }
     })
 
-    const box = new THREE.Box3().setFromObject(gltf.scene)
+    const box = new THREE.Box3().setFromObject(model)
     const center = box.getCenter(new THREE.Vector3())
-    gltf.scene.position.sub(center)
-    scene.add(gltf.scene)
+    model.position.sub(center)
+
+    scene.add(model)
     loadingRef.value?.remove()
+
+    startAnimations()
   })
+
+  // Add GSAP animations
+  const overlay = document.querySelector('.overlay')
+  const counter = document.querySelector('.counter p')
+
+  function splitText() {
+    const textElements = document.querySelectorAll(
+      'nav a, nav p, h1, .footer p'
+    )
+
+    textElements.forEach((element) => {
+      const text = element.textContent?.toUpperCase()
+      element.textContent = ''
+
+      text?.split('').forEach((char) => {
+        if (char === ' ') {
+          const spaceSpan = document.createElement('span')
+          spaceSpan.classList.add('space')
+          spaceSpan.style.display = 'inline-block'
+          spaceSpan.style.width = '15px'
+          spaceSpan.style.opacity = '0'
+          element.appendChild(spaceSpan)
+        } else {
+          const span = document.createElement('span')
+          span.classList.add('char')
+          span.textContent = char
+          span.style.display = 'inline-block'
+          span.style.opacity = '0'
+          element.appendChild(span)
+        }
+      })
+    })
+  }
+
+  splitText()
+
+  function startAnimations() {
+    const timeline = gsap.timeline({
+      onComplete: () => {
+        animationComplete = true
+      },
+    })
+
+    // Generate random checkpoints but ensure last one is 100
+    const checkpoints = [0]
+    const numJumps = 7
+    let currentValue = 0
+
+    while (checkpoints.length < numJumps) {
+      const minJump = 5
+      const maxJump =
+        Math.floor((100 - currentValue) / (numJumps - checkpoints.length + 1)) *
+        2
+      const jump = minJump + Math.floor(Math.random() * (maxJump - minJump))
+
+      currentValue += jump
+      if (currentValue < 97) {
+        checkpoints.push(currentValue)
+      }
+    }
+    checkpoints.push(97)
+    checkpoints.push(100)
+
+    let currentIndex = 0
+    timeline.to(
+      {},
+      {
+        duration: 4,
+        ease: 'none',
+        onUpdate: function () {
+          const timeProgress = this.progress()
+          const targetIndex = Math.floor(timeProgress * checkpoints.length)
+
+          if (
+            targetIndex !== currentIndex &&
+            targetIndex < checkpoints.length
+          ) {
+            currentIndex = targetIndex
+            counter!.textContent = String(checkpoints[currentIndex])
+          }
+        },
+        onComplete: function () {
+          counter!.textContent = '100'
+        },
+      }
+    )
+
+    timeline.to(
+      '.counter',
+      {
+        opacity: 0,
+        duration: 0.75,
+        ease: 'power2.out',
+      },
+      '+=0.2'
+    )
+
+    const rotationProxy = {
+      angle: currentAngle.value,
+    }
+
+    timeline.to(
+      rotationProxy,
+      {
+        angle: initialAngle,
+        duration: 2,
+        ease: 'power2.inOut',
+        onUpdate: () => {
+          currentAngle.value = rotationProxy.angle
+          camera.position.x = Math.cos(currentAngle.value) * radius
+          camera.position.z = Math.sin(currentAngle.value) * radius
+          camera.lookAt(0, 0, 0)
+        },
+      },
+      '+=0.2'
+    )
+
+    timeline.to(
+      overlay,
+      {
+        opacity: 0,
+        duration: 1.5,
+        ease: 'power2.inOut',
+        onComplete: () => {
+          overlay!.remove()
+        },
+      },
+      '<'
+    )
+
+    // @ts-ignore
+    timeline.add(() => {
+      const allChars = document.querySelectorAll('.char, .space')
+
+      const textTimeline = gsap.timeline()
+
+      textTimeline.to(allChars, {
+        duration: 0.1,
+        opacity: 1,
+        ease: 'power2.inOut',
+        stagger: {
+          amount: 1,
+          each: 0.1,
+          from: 'random',
+          repeat: 2,
+          yoyo: true,
+        },
+      })
+
+      textTimeline.to(allChars, {
+        duration: 0.1,
+        opacity: 1,
+        ease: 'power2.inOut',
+        stagger: {
+          amount: 1,
+          each: 0.1,
+          from: 'random',
+          repeat: 1,
+          yoyo: true,
+        },
+      })
+
+      textTimeline.to(allChars, {
+        duration: 0.15,
+        opacity: 1,
+        ease: 'power2.inOut',
+        stagger: {
+          amount: 1,
+          each: 0.2,
+          from: 'random',
+        },
+      })
+
+      return textTimeline
+    }, '-=1')
+
+    return timeline
+  }
 
   // 6. Post-Processing Setup
   const renderScene = new RenderPass(scene, camera)
   const bloomPass = new UnrealBloomPass(
-    new THREE.Vector2(width.value, height.value),
+    new THREE.Vector2(window.innerWidth, window.innerHeight),
     2.0,
     0.25,
     0.5
@@ -191,34 +382,34 @@ onNuxtReady(() => {
     },
 
     vertexShader: `
-    varying vec2 vUv;
-    void main() {
-      vUv = uv;
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-    }
-  `,
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }
+    `,
 
     fragmentShader: `
-    uniform sampler2D tDiffuse;
-    uniform float time;
-    uniform float amount;
-    uniform float speed;
-    uniform float size;
-    varying vec2 vUv;
+      uniform float time;
+      uniform float amount;
+      uniform float speed;
+      uniform float size;
+      uniform sampler2D tDiffuse;
+      varying vec2 vUv;
 
-    float rand(vec2 co) {
-      return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453);
-    }
+      float random(vec2 co) {
+        return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
+      }
 
-    void main() {
-      vec4 color = texture2D(tDiffuse, vUv);
-      vec2 position = vUv;
-      position *= size;
-      float grain = rand(position * speed * speed);
-      color.rgb += grain * amount;
-      gl_FragColor = color; 
-    }
-  `,
+      void main() {
+        vec4 color = texture2D(tDiffuse, vUv);
+        vec2 position = vUv;
+        position *= size;
+        float grain = random(position * time * speed);
+        color.rgb += grain * amount;
+        gl_FragColor = color;
+      }
+    `,
   }
 
   const filmGrainPass = new ShaderPass(FilmGrainShader)
@@ -238,19 +429,18 @@ onNuxtReady(() => {
 
     filmGrainPass.uniforms.time.value = performance.now() * 0.001
 
-    currentAngle.value = lerp(currentAngle.value, targetAngle.value, 0.025)
-    currentY.value = lerp(currentY.value, targetY.value, 0.025)
+    if (animationComplete) {
+      currentAngle.value = lerp(currentAngle.value, targetAngle.value, 0.025)
+      currentY.value = lerp(currentY.value, targetY.value, 0.025)
 
-    camera.position.x = Math.cos(currentAngle.value) * radius
-    camera.position.z = Math.sin(currentAngle.value) * radius
-    camera.position.y = lerp(camera.position.y, currentY.value, 0.05)
+      camera.position.x = Math.cos(currentAngle.value) * radius
+      camera.position.z = Math.sin(currentAngle.value) * radius
+      camera.position.y = lerp(camera.position.y, currentY.value, 0.05)
+    }
 
     camera.lookAt(0, 0, 0)
-
     composer.render()
   }
-
-  animate()
 
   onWindowResize.value = () => {
     camera.aspect = width.value / height.value
@@ -258,6 +448,8 @@ onNuxtReady(() => {
     renderer.setSize(width.value, height.value)
     composer.setSize(width.value, height.value)
   }
+
+  animate()
 })
 onMounted(() => {
   window.addEventListener('resize', onWindowResize.value, false)

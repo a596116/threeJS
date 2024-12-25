@@ -1,9 +1,11 @@
 <template>
-  <div>
-    <ClientOnly>
-      <NuxtLayout>
+  <Html lang="zh-TW">
+    <Body>
+      <ClientOnly>
+        <!-- <NuxtLayout> -->
         <NuxtPage />
-      </NuxtLayout>
-    </ClientOnly>
-  </div>
+        <!-- </NuxtLayout> -->
+      </ClientOnly>
+    </Body>
+  </Html>
 </template>

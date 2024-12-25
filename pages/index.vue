@@ -18,6 +18,10 @@ const routerMap = [
     name: 'Project 2',
     path: '/project2',
   },
+  {
+    name: 'Project 3',
+    path: '/project3',
+  },
 ]
 </script>
 
@@ -27,6 +31,7 @@ main {
   justify-content: center;
   align-items: center;
   height: 100vh;
+  background-color: #5d5d5d;
 }
 a {
   color: #fff;
@@ -36,5 +41,11 @@ a {
   &:hover {
     color: blue;
   }
+}
+ul {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+  flex-direction: column;
 }
 </style>

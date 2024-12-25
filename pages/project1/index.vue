@@ -45,6 +45,8 @@ const { width, height } = useWindowSize()
 const corridorRef = ref<HTMLElement | null>(null)
 const loadingRef = ref<HTMLElement | null>(null)
 
+const onWindowResize = ref()
+
 onNuxtReady(() => {
   // 1. Basic Scene Setup
   const scene = new THREE.Scene()
@@ -250,20 +252,19 @@ onNuxtReady(() => {
 
   animate()
 
-  const onWindowResize = () => {
+  onWindowResize.value = () => {
     camera.aspect = width.value / height.value
     camera.updateProjectionMatrix()
     renderer.setSize(width.value, height.value)
     composer.setSize(width.value, height.value)
   }
+})
+onMounted(() => {
+  window.addEventListener('resize', onWindowResize.value, false)
+})
 
-  onMounted(() => {
-    window.addEventListener('resize', onWindowResize, false)
-  })
-
-  onBeforeUnmount(() => {
-    window.removeEventListener('resize', onWindowResize, false)
-  })
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', onWindowResize.value, false)
 })
 
 // 9. Window Resize Event Listener

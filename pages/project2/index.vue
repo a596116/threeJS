@@ -1,99 +1,98 @@
 <template>
   <main>
-    <div class="container">
-      <nav>
-        <p id="logo">HaoDai</p>
-        <button>Download Now</button>
-      </nav>
+    <nav>
+      <p id="logo">
+        <NuxtLink to="/">Home</NuxtLink>
+      </p>
+    </nav>
 
-      <section class="intro"></section>
+    <section class="intro"></section>
 
-      <section ref="stepsRef" class="steps">
-        <div class="step-counter">
-          <div class="counter-title">
-            <h1>Steps</h1>
+    <section ref="stepsRef" class="steps">
+      <div class="step-counter">
+        <div class="counter-title">
+          <h1>Steps</h1>
+        </div>
+        <div class="count">
+          <div ref="countContainerRef" class="count-container">
+            <h1>01</h1>
+            <h1>02</h1>
+            <h1>03</h1>
+            <h1>04</h1>
+            <h1>05</h1>
           </div>
-          <div class="count">
-            <div ref="countContainerRef" class="count-container">
-              <h1>01</h1>
-              <h1>02</h1>
-              <h1>03</h1>
-              <h1>04</h1>
-              <h1>05</h1>
-            </div>
+        </div>
+      </div>
+
+      <div class="cards">
+        <div ref="cardRef" class="card">
+          <div class="card-img">
+            <HDImg src="/img/card-1.jpg" />
+          </div>
+          <div class="card-content">
+            <p>
+              Effortlessly import your 3D models and assets into our intui tive
+              design tool, ensuring that projects are set up quickly .
+            </p>
+          </div>
+        </div>
+        <div ref="cardRef" class="card">
+          <div class="card-img">
+            <HDImg src="/img/card-2.jpg" />
+          </div>
+          <div class="card-content">
+            <p>
+              Effortlessly import your 3D models and assets into our intui tive
+              design tool, ensuring that projects are set up quickly .
+            </p>
+          </div>
+        </div>
+        <div ref="cardRef" class="card">
+          <div class="card-img">
+            <HDImg src="/img/card-3.jpg" />
+          </div>
+          <div class="card-content">
+            <p>
+              Effortlessly import your 3D models and assets into our intui tive
+              design tool, ensuring that projects are set up quickly .
+            </p>
+          </div>
+        </div>
+        <div ref="cardRef" class="card">
+          <div class="card-img">
+            <HDImg src="/img/card-4.jpg" />
+          </div>
+          <div class="card-content">
+            <p>
+              Effortlessly import your 3D models and assets into our intui tive
+              design tool, ensuring that projects are set up quickly .
+            </p>
+          </div>
+        </div>
+        <div ref="cardRef" class="card">
+          <div class="card-img">
+            <HDImg src="/img/card-5.jpg" />
+          </div>
+          <div class="card-content">
+            <p>
+              Effortlessly import your 3D models and assets into our intui tive
+              design tool, ensuring that projects are set up quickly .
+            </p>
           </div>
         </div>
 
-        <div class="cards">
-          <div ref="cardRef" class="card">
-            <div class="card-img">
-              <HDImg src="/img/card-1.jpg" />
-            </div>
-            <div class="card-content">
-              <p>
-                Effortlessly import your 3D models and assets into our intui
-                tive design tool, ensuring that projects are set up quickly .
-              </p>
-            </div>
-          </div>
-          <div ref="cardRef" class="card">
-            <div class="card-img">
-              <HDImg src="/img/card-2.jpg" />
-            </div>
-            <div class="card-content">
-              <p>
-                Effortlessly import your 3D models and assets into our intui
-                tive design tool, ensuring that projects are set up quickly .
-              </p>
-            </div>
-          </div>
-          <div ref="cardRef" class="card">
-            <div class="card-img">
-              <HDImg src="/img/card-3.jpg" />
-            </div>
-            <div class="card-content">
-              <p>
-                Effortlessly import your 3D models and assets into our intui
-                tive design tool, ensuring that projects are set up quickly .
-              </p>
-            </div>
-          </div>
-          <div ref="cardRef" class="card">
-            <div class="card-img">
-              <HDImg src="/img/card-4.jpg" />
-            </div>
-            <div class="card-content">
-              <p>
-                Effortlessly import your 3D models and assets into our intui
-                tive design tool, ensuring that projects are set up quickly .
-              </p>
-            </div>
-          </div>
-          <div ref="cardRef" class="card">
-            <div class="card-img">
-              <HDImg src="/img/card-5.jpg" />
-            </div>
-            <div class="card-content">
-              <p>
-                Effortlessly import your 3D models and assets into our intui
-                tive design tool, ensuring that projects are set up quickly .
-              </p>
-            </div>
-          </div>
+        <div ref="cardRef" class="card empty"></div>
+        <div ref="cardRef" class="card empty"></div>
+      </div>
+    </section>
 
-          <div ref="cardRef" class="card empty"></div>
-          <div ref="cardRef" class="card empty"></div>
-        </div>
-      </section>
-
-      <section class="outro">
-        <p>
-          Our 3D design tool is built to enhance tour creative workdlow,
-          <span>providing an all-in-one solution</span>
-          for crafting stunning visuals and prototypes.
-        </p>
-      </section>
-    </div>
+    <section class="outro">
+      <p>
+        Our 3D design tool is built to enhance tour creative workdlow,
+        <span>providing an all-in-one solution</span>
+        for crafting stunning visuals and prototypes.
+      </p>
+    </section>
   </main>
 </template>
 

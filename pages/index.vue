@@ -1,8 +1,12 @@
 <template>
   <main>
-    <ul>
-      <li v-for="route in projects" :key="route.name">
-        <nuxt-link :to="route.path">{{ route.name }}</nuxt-link>
+    <ul class="perspective-distant">
+      <li
+        v-for="route in projects"
+        :key="route.name"
+        class="transform-3d rotate-x-12 shadow-xl transition-all duration-500 hover:-translate-y-4 hover:rotate-x-[20deg] hover:rotate-z-3 hover:shadow-2xl"
+      >
+        <nuxt-link :to="route.path" class="!p-4">{{ route.name }}</nuxt-link>
       </li>
     </ul>
   </main>

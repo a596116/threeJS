@@ -33,5 +33,12 @@ export default defineNuxtConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    css: {
+      preprocessorOptions: {
+        scss: {
+          api: 'modern-compiler',
+        },
+      },
+    },
   } as NuxtConfig['vite'],
 })
